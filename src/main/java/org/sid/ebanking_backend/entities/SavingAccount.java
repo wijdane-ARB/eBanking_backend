@@ -1,4 +1,11 @@
 package org.sid.ebanking_backend.entities;
 
-public class SavingAccount {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data @NoArgsConstructor @AllArgsConstructor
+public class SavingAccount extends BankAccount {
+    private double interestRate;
+
 }
