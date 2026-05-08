@@ -1,9 +1,8 @@
 package org.sid.ebanking_backend;
 
-import org.sid.ebanking_backend.entities.CurrentAccount;
-import org.sid.ebanking_backend.entities.Customer;
-import org.sid.ebanking_backend.entities.SavingAccount;
+import org.sid.ebanking_backend.entities.*;
 import org.sid.ebanking_backend.enums.AccountStatus;
+import org.sid.ebanking_backend.enums.OperationType;
 import org.sid.ebanking_backend.repositories.AccountOperationRepo;
 import org.sid.ebanking_backend.repositories.BankAccountRepo;
 import org.sid.ebanking_backend.repositories.CustomerRepo;
@@ -52,6 +51,33 @@ public class EBankingBackendApplication {
 				savingAccount.setCustomer(cust);
 				savingAccount.setInterestRate(5.5);
 				bankAccountRepo.save(currentAccount);
+			});
+
+			bankAccountRepo.findAll().forEach(acc->{
+				for (int i = 0; i<10 ; i++){
+					AccountOperation accountOperation = new AccountOperation();
+					accountOperation.setOperationDate(new Date());
+					accountOperation.setAmount(Math.random()*12000);
+					accountOperation.setType(Math.random()>0.5? OperationType.DEBIT: OperationType.CREDIT);
+					accountOperation.setBankAccount(acc);
+					accountOperationRepo.save(accountOperation);
+
+				}
+				BankAccount bankAccount = bankAccountRepo.findById("bea9f03a-71d2-4f27-8c46-a81d0321b7a4").orElse(null);
+				System.out.println("***********************");
+				System.out.println(bankAccount.getId());
+				System.out.println(bankAccount.getBalance());
+				System.out.println(bankAccount.getCreatedAt());
+				System.out.println(bankAccount.getStatus());
+				System.out.println(bankAccount.getCustomer().getName());
+				if(bankAccount instanceof CurrentAccount){
+					System.out.println("Over Draft==>"+((CurrentAccount)bankAccount).getOverDraft());
+					
+				} else if (bankAccount instanceof SavingAccount) {
+					System.out.println("Rate==>"+((SavingAccount)bankAccount).getInterestRate());
+					
+				}
+
 			});
 
 		};
