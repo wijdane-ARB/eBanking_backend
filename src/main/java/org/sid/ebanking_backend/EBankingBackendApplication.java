@@ -22,6 +22,8 @@ public class EBankingBackendApplication {
 		SpringApplication.run(EBankingBackendApplication.class, args);
 	}
 
+	
+
 
 	@Bean
 	CommandLineRunner start(CustomerRepo customerRepo, BankAccountRepo  bankAccountRepo, AccountOperationRepo accountOperationRepo){
@@ -45,42 +47,53 @@ public class EBankingBackendApplication {
 
 
 				SavingAccount savingAccount = new SavingAccount();
+				savingAccount.setId(UUID.randomUUID().toString());
 				savingAccount.setBalance(Math.random()*90000);
 				savingAccount.setCreatedAt(new Date());
 				savingAccount.setStatus(AccountStatus.CREATED);
 				savingAccount.setCustomer(cust);
 				savingAccount.setInterestRate(5.5);
-				bankAccountRepo.save(currentAccount);
+				bankAccountRepo.save(savingAccount);
 			});
 
-			bankAccountRepo.findAll().forEach(acc->{
-				for (int i = 0; i<10 ; i++){
-					AccountOperation accountOperation = new AccountOperation();
-					accountOperation.setOperationDate(new Date());
-					accountOperation.setAmount(Math.random()*12000);
-					accountOperation.setType(Math.random()>0.5? OperationType.DEBIT: OperationType.CREDIT);
-					accountOperation.setBankAccount(acc);
-					accountOperationRepo.save(accountOperation);
+			bankAccountRepo.findAll().forEach(acc-> {
+						for (int i = 0; i < 10; i++) {
+							AccountOperation accountOperation = new AccountOperation();
+							accountOperation.setOperationDate(new Date());
+							accountOperation.setAmount(Math.random() * 12000);
+							accountOperation.setType(Math.random() > 0.5 ? OperationType.DEBIT : OperationType.CREDIT);
+							accountOperation.setBankAccount(acc);
+							accountOperationRepo.save(accountOperation);
 
-				}
-				BankAccount bankAccount = bankAccountRepo.findById("bea9f03a-71d2-4f27-8c46-a81d0321b7a4").orElse(null);
+						}
+					});
+				BankAccount bankAccount = bankAccountRepo.findById("1029115c-6c1e-45ac-bf0f-08d8aeea057c").orElse(null);
 				System.out.println("***********************");
 				System.out.println(bankAccount.getId());
 				System.out.println(bankAccount.getBalance());
 				System.out.println(bankAccount.getCreatedAt());
 				System.out.println(bankAccount.getStatus());
 				System.out.println(bankAccount.getCustomer().getName());
+				System.out.println(bankAccount.getClass().getSimpleName());
 				if(bankAccount instanceof CurrentAccount){
 					System.out.println("Over Draft==>"+((CurrentAccount)bankAccount).getOverDraft());
-					
+
 				} else if (bankAccount instanceof SavingAccount) {
 					System.out.println("Rate==>"+((SavingAccount)bankAccount).getInterestRate());
-					
-				}
 
-			});
+				}
+				bankAccount.getAccountOperations().forEach(op->{
+					System.out.println("=============================");
+					System.out.println(op.getType());
+					System.out.println(op.getAmount());
+					System.out.println(op.getOperationDate());
+
+				}
+				);
+
+			};
 
 		};
 	}
 
-}
+
